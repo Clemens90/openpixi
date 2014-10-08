@@ -152,6 +152,7 @@ public class CloudInCell extends InterpolatorAlgorithm {
                                 (p.getX() - (xCellPosition2 -0.5) * g.getCellWidth()) *
                                 (p.getY() - (yCellPosition2 -0.5) * g.getCellHeight())) /
                                 (g.getCellWidth() * g.getCellHeight()));
+                //p.setBz(0);
 	}
 
 

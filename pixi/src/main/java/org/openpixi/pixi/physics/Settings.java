@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.openpixi.pixi.physics.grid.ChargeConservingAreaWeighting;
 
 /**
  * Specifies default values of simulation parameters.
@@ -57,7 +58,7 @@ public class Settings {
 
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 
-	private InterpolatorAlgorithm interpolator = new CloudInCell();
+	private InterpolatorAlgorithm interpolator = new ChargeConservingAreaWeighting();
 
 	// Grid related settings
 

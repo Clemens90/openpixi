@@ -110,7 +110,7 @@ public class MainControlApplet extends JApplet {
 			"Single particle in el. Field",
 			"3 part. in magnetic field",
 			"Spring force test",
-			"Collision detection Test"};
+                        "Pair of particles"};
 
 	String[] solverString = {
 			"Euler Richardson",

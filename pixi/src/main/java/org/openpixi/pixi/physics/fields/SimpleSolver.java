@@ -6,11 +6,8 @@ import org.openpixi.pixi.physics.grid.Grid;
 
 public class SimpleSolver extends FieldSolver {
 
-	private double timeStep;
 	private Solve solve = new Solve();
         
-        private double mue0 = 0.05;
-        private double eps0 = 10.0;
 
 
 	/**A simple LeapFrog algorithm
@@ -19,13 +16,14 @@ public class SimpleSolver extends FieldSolver {
 	*/
 	@Override
 	public void step(Grid grid, double timeStep) {
-		this.timeStep = timeStep;
+		this.solve.timeStep = timeStep;
 		cellIterator.execute(grid, solve);
 	}
 
 
 	private class Solve implements CellAction {
 
+	private double timeStep = 0.0;
 		public void execute(Cell cell) {
 			throw new UnsupportedOperationException();
 		}
@@ -33,19 +31,19 @@ public class SimpleSolver extends FieldSolver {
 		public void execute(Grid grid, int x, int y) {
 			/**curl of the E field using forward difference since the B field is located in the center
                          of the grid and the E-field is located at the edges*/
-			double cz = (grid.getEy(x+1, y) - grid.getEy(x, y)) / (grid.getCellWidth()) -
-					(grid.getEx(x, y+1) - grid.getEx(x, y)) / (grid.getCellHeight());
+			double cz = (grid.getEyo(x+1, y) - grid.getEyo(x, y)) / (grid.getCellWidth()) -
+					(grid.getExo(x, y+1) - grid.getExo(x, y)) / (grid.getCellHeight());
 
 			/**Maxwell equations*/
 			grid.addBz(x, y, -timeStep * cz);
 
 			/**curl of the B field using center difference*/
-			double cx = (grid.getBz(x, y) - grid.getBz(x, y-1)) / (grid.getCellHeight());
-			double cy = -(grid.getBz(x, y) - grid.getBz(x-1, y)) / (grid.getCellWidth());
-
+			double cx = (grid.getBzo(x, y) - grid.getBzo(x, y-1)) / (grid.getCellHeight());
+			double cy = -(grid.getBzo(x, y) - grid.getBzo(x-1, y)) / (grid.getCellWidth());
+                        
 			/**Maxwell EQ*/
-			grid.addEx(x, y, timeStep * (cx/(mue0*eps0) - grid.getJx(x, y)/eps0));
-			grid.addEy(x, y, timeStep * (cy/(mue0*eps0) - grid.getJy(x, y)/eps0));
+			grid.addEx(x, y, timeStep * (cx - 4 * Math.PI * grid.getJx(x, y)));
+			grid.addEy(x, y, timeStep * (cy - 4 * Math.PI * grid.getJy(x, y)));
 		}
 	}
 

@@ -18,7 +18,7 @@ public class PoissonSolverFFTPeriodic implements PoissonSolver {
 	 * @param g Grid on which the calculation should be performed
 	 */
     
-         double eps0 = 10.0;
+         
          
 	public void solve(Grid g) {
 		
@@ -44,21 +44,21 @@ public class PoissonSolverFFTPeriodic implements PoissonSolver {
 		//perform Fourier transformation
 		fft.complexForward(trho);
 		
-		//Solve Poisson equation in Fourier space
+		//Solve Poisson equation in Fourier space using cgs units
 		//We omit the term with i,j=0 where d would become 0. This term only contributes a constant term
 		//to the potential and can therefore be chosen arbitrarily.
 		for(int i = 1; i < columns; i++) {
 			for(int j = 0; j < rows; j++) {
 				double d = (4 - 2 * Math.cos((2 * Math.PI * i) / g.getNumCellsX()) - 2 * Math.cos((2 * Math.PI * j) / g.getNumCellsY()));
-				phi[i][2*j] = (cellArea * trho[i][2*j]) / (d*eps0);
-				phi[i][2*j+1] = (cellArea * trho[i][2*j+1]) / (d*eps0);
+				phi[i][2*j] = (cellArea * trho[i][2*j] * 4 * Math.PI) / d;
+				phi[i][2*j+1] = (cellArea * trho[i][2*j+1] * 4 * Math.PI) / d;
 			}
 		}
 		//i=0 but j!=0
 		for(int j = 1; j < rows; j++) {
 			double d = (2 - 2 * Math.cos((2 * Math.PI * j) / g.getNumCellsY()));
-			phi[0][2*j] = (cellArea * trho[0][2*j]) / (d*eps0);
-			phi[0][2*j+1] = (cellArea * trho[0][2*j+1]) / (d*eps0);		
+			phi[0][2*j] = (cellArea * trho[0][2*j] * 4 * Math.PI) / d;
+			phi[0][2*j+1] = (cellArea * trho[0][2*j+1]* 4 * Math.PI) / d;		
 		}
                 phi[0][0] = 0;
                 phi[0][1] = 0;

@@ -9,10 +9,10 @@ public class ChargeConservingAreaWeighting extends InterpolatorAlgorithm {
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
                 //we start by shifting the particle by (-0.5, -0.5)
                 //since the grid for the current is shifted by (0.5,0.5)
-                p.addPrevX(-0.5);
-                p.addPrevY(-0.5);
-                p.addX(-0.5);
-                p.addY(-0.5);
+                p.addPrevX(-0.5*g.getCellWidth());
+                p.addPrevY(-0.5*g.getCellHeight());
+                p.addX(-0.5*g.getCellWidth());
+                p.addY(-0.5*g.getCellHeight());
             
 		//local origin i.e. nearest grid point BEFORE particle push
 		int xStart = (int) Math.floor(p.getPrevX() / g.getCellWidth() + 0.5);
@@ -52,10 +52,10 @@ public class ChargeConservingAreaWeighting extends InterpolatorAlgorithm {
 					tenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g, tstep);
 
 				}
-                p.addPrevX(0.5);
-                p.addX(0.5);
-                p.addPrevY(0.5);
-                p.addY(0.5);
+                p.addPrevX(0.5*g.getCellWidth());
+                p.addX(0.5*g.getCellWidth());
+                p.addPrevY(0.5*g.getCellHeight());
+                p.addY(0.5*g.getCellHeight());
 	}
 
 	/**
