@@ -5,10 +5,27 @@
 	<groupId>org.openpixi.pixi</groupId>
 	<artifactId>pixi</artifactId>
 	<packaging>jar</packaging>
-	<version>0.4-SNAPSHOT</version>
+	<version>0.6-SNAPSHOT</version>
 	<name>pixi</name>
 	<url>http://maven.apache.org</url>
 
+
+        <repositories>
+		<repository>
+			<id>sonatype</id>
+			<name>Sonatype OSS Snapshots Repository</name>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+		</repository>
+	</repositories>
+	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>sonatype</id>
+			<name>Sonatype OSS Snapshots Repository</name>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+		</pluginRepository>
+	</pluginRepositories>
+        
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -180,7 +197,6 @@
 
 	<build>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

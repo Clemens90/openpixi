@@ -27,6 +27,8 @@ import javax.swing.event.*;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
+import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.physics.solver.relativistic.*;
 
 /**
  * Displays the animation of particles.
@@ -80,7 +82,6 @@ public class MainControlApplet extends JApplet {
 	private JComboBox algorithmComboBox;
 	private JCheckBox traceCheck;
 	private JComboBox collisionComboBox;
-	private JComboBox collisionDetector;
 	private JComboBox collisionAlgorithm;
 
 	private JRadioButton hardBoundaries;
@@ -124,10 +125,6 @@ public class MainControlApplet extends JApplet {
 
 	String[] collisionsString = {
 			"No collisions",
-			"Elastic collisions"
-	};
-
-	String[] collisiondetectorString = {
 			"All particles",
 			"Sweep & Prune",
 						"KD-Tree"
@@ -214,32 +211,33 @@ public class MainControlApplet extends JApplet {
 			int i = cbox.getSelectedIndex();
 			particlePanel.collisionChange(i);
 			if(i == 0) {
-				collisionDetector.setEnabled(false);
 				collisionAlgorithm.setEnabled(false);
+				collisionAlgorithm.addItem("Enable collisions first");
+				collisionAlgorithm.setSelectedItem("Enable collisions first");
 			} else {
-				collisionDetector.setEnabled(true);
 				collisionAlgorithm.setEnabled(true);
+				//setSelectedIndex() automatically calls collisionAlgorithm.actionPerformed()!
+				collisionAlgorithm.setSelectedIndex(0);
+				collisionAlgorithm.removeItem("Enable collisions first");
 			}
 		}
 	}
 
-	class CollisionDetector implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			JComboBox cbox = (JComboBox) eve.getSource();
-			int i = cbox.getSelectedIndex();
-			particlePanel.detectorChange(i);
-		}
-	}
-
 	class CollisionAlgorithm implements ActionListener {
+		
 		public void actionPerformed(ActionEvent eve) {
 			JComboBox cbox = (JComboBox) eve.getSource();
 			int i = cbox.getSelectedIndex();
-			particlePanel.algorithmCollisionChange(i);
+			int j = collisionComboBox.getSelectedIndex();
+			if (j == 0) {
+				collisionAlgorithm.setSelectedItem("Enable collisions first");
+			} else {
+				particlePanel.algorithmCollisionChange(i);
+			}
 		}
 	}
 
-
+ 
 	/**
 	 * Listener for start button.
 	 */
@@ -447,7 +445,7 @@ public class MainControlApplet extends JApplet {
 			int ybox = Integer.parseInt(yboxentry.getText());
 			double width = particlePanel.s.getWidth();
 			double height = particlePanel.s.getHeight();
-			particlePanel.s.grid.set(xbox, ybox, width, height);
+			particlePanel.s.grid.changeSize(xbox, ybox, width, height);
 		}
 	}
 
@@ -585,11 +583,6 @@ public class MainControlApplet extends JApplet {
 		//collisionComboBox.setPreferredSize(new Dimension(collisionComboBox.getPreferredSize().width, 5));
 		JLabel collisionsLabel = new JLabel("Collisions");
 
-		collisionDetector = new JComboBox(collisiondetectorString);
-		collisionDetector.setSelectedIndex(0);
-		collisionDetector.addActionListener(new CollisionDetector());
-		JLabel colDetectorLabel = new JLabel("Detection method");
-
 		collisionAlgorithm = new JComboBox(collisionalgorithmString);
 		collisionAlgorithm.setSelectedIndex(0);
 		collisionAlgorithm.addActionListener(new CollisionAlgorithm());
@@ -598,9 +591,6 @@ public class MainControlApplet extends JApplet {
 		Box collisionBox = Box.createVerticalBox();
 		collisionBox.add(collisionsLabel);
 		collisionBox.add(collisionComboBox);
-		collisionBox.add(Box.createVerticalGlue());
-		collisionBox.add(colDetectorLabel);
-		collisionBox.add(collisionDetector);
 		collisionBox.add(Box.createVerticalGlue());
 		collisionBox.add(colAlgorithmLabel);
 		collisionBox.add(collisionAlgorithm);
@@ -804,7 +794,7 @@ public class MainControlApplet extends JApplet {
 		yboxentry.setText("10");
 		double width = particlePanel.s.getWidth();
 		double height = particlePanel.s.getHeight();
-		particlePanel.s.grid.set(10, 10, width, height);
+		particlePanel.s.grid.changeSize(10, 10, width, height);
 		writePositionCheck.setSelected(false);
 		filename.setEditable(false);
 		filename.setEnabled(false);
@@ -820,11 +810,26 @@ public class MainControlApplet extends JApplet {
 			hardBoundaries.setSelected(false);
 			periodicBoundaries.setSelected(true);
 		}
-		//particlePanel.s.collision.alg = new CollisionAlgorithm();
-		//particlePanel.s.detector = new Detector();
+		
+		//ordering of these two is important!
 		collisionComboBox.setSelectedIndex(0);
-		collisionDetector.setSelectedIndex(0);
 		collisionAlgorithm.setSelectedIndex(0);
+
+		// Set algorithm UI according to current setting
+		Solver solver = particlePanel.s.getParticleMover().getSolver();
+		if (solver instanceof Boris) {
+			algorithmComboBox.setSelectedIndex(4);
+			relativisticCheck.setSelected(false);
+		} else if (solver instanceof BorisRelativistic) {
+			algorithmComboBox.setSelectedIndex(4);
+			relativisticCheck.setSelected(true);
+		} else if (solver instanceof EulerRichardson) {
+			algorithmComboBox.setSelectedIndex(0);
+			relativisticCheck.setSelected(false);
+		}
+		// TODO: Implement this for other solvers.
+		// (Currently only implemented for solvers used in InitialConditions.)
+
 		linkConstantForce();
 	}
 

@@ -19,7 +19,6 @@
 package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.InitialConditions;
-import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.algorithms.MatrixTransformation;
@@ -36,6 +35,7 @@ import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.force.relativistic.ConstantForceRelativistic;
 import org.openpixi.pixi.physics.force.relativistic.SimpleGridForceRelativistic;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
@@ -52,7 +52,13 @@ import java.util.ArrayList;
 
 import static java.awt.geom.AffineTransform.getRotateInstance;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
+<<<<<<< HEAD
 import org.openpixi.pixi.physics.collision.algorithms.*;
+=======
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+>>>>>>> 719458d68c1e3c26816ff3e46f7ed9116ca19b40
 
 
 /**
@@ -103,8 +109,11 @@ public class Particle2DPanel extends JPanel {
 	public class TimerListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent eve) {
-
-			s.step();
+                    try {
+                        s.step();
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(Particle2DPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
 			frameratedetector.update();
 			sx = getWidth() / s.getWidth();
 			sy = getHeight() / s.getHeight();
@@ -215,10 +224,10 @@ public class Particle2DPanel extends JPanel {
 			//force.gy = -1;
 			//force.drag = 0.08;
 			s.f.add(force);
-			InitialConditions.createRandomParticles(s.getWidth(), s.getHeight(), s.getSpeedOfLight(), 1, 10);
+			s.particles = InitialConditions.createRandomParticles(s.getWidth(), s.getHeight(), s.getSpeedOfLight(), 1, 1);
 			Particle par = (Particle) s.particles.get(0);
-			par.setX(this.getWidth() * 0.5);
-			par.setY(this.getHeight() * 0.5);
+			par.setX(s.getWidth() * 0.5);
+			par.setY(s.getHeight() * 0.5);
 			//System.out.println(this.getWidth() * 0.5 + " x0");
 			//System.out.println(this.getHeight() * 0.5 + " y0");
 			par.setVx(10);
@@ -326,24 +335,13 @@ public class Particle2DPanel extends JPanel {
 	public void collisionChange(int i) {
 		switch(i) {
 		case 0:
-			s.collisionBoolean = false;
 			s.detector = new Detector();
 			s.collisionalgorithm = new CollisionAlgorithm();
 			break;
 		case 1:
-			s.collisionBoolean = true;
-			s.detector = new AllParticles(s.particles);
-			s.collisionalgorithm = new SimpleCollision();
-			break;
-		}
-	}
-
-	public void detectorChange(int i) {
-		switch(i) {
-		case 0:
 			s.detector = new AllParticles(s.particles);
 			break;
-		case 1:
+		case 2:
 			s.detector = new SweepAndPrune(s.particles);
 			break;
 				case 2:

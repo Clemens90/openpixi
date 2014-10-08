@@ -21,6 +21,8 @@ package org.openpixi.pixi.physics;
 
 import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.force.SpringForce;
+import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.ParticleFull;
 import org.openpixi.pixi.physics.solver.EulerRichardson;
 import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
 
@@ -39,19 +41,22 @@ public class InitialConditions {
 		Settings stt = new Settings();
 
 		stt.setTimeStep(1);
-		stt.setSpeedOfLight(3);
+
+		//stt.setSpeedOfLight(3);
+		// Use maximum speed available by grid
+		stt.setSpeedOfLight(stt.getCellWidth() / stt.getTimeStep());
+
 		stt.setSimulationWidth(100);
 		stt.setSimulationHeight(100);
 
 		stt.addForce(new ConstantForce());
-		stt.setNumOfParticles(count);
-		stt.setParticleRadius(radius);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
-
+		stt.setParticleList(
+				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
+				stt.getSpeedOfLight() / 3, count, radius));
 		stt.setBoundary(GeneralBoundaryType.Hardwall);
-		stt.setParticleSolver(new EulerRichardson());
-		stt.setParticleSolver(new BorisRelativistic(
-				stt.getCellWidth() / stt.getTimeStep()));
+		//stt.setParticleSolver(new EulerRichardson());
+		stt.setParticleSolver(new BorisRelativistic(stt.getSpeedOfLight()));
+		
 
 		Simulation simulation = new Simulation(stt);
 		return simulation;
@@ -68,9 +73,9 @@ public class InitialConditions {
 		ConstantForce cf = new ConstantForce();
 		cf.gy = -1;
 		stt.addForce(cf);
-		stt.setNumOfParticles(count);
-		stt.setParticleRadius(radius);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+		stt.setParticleList(
+				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
+				stt.getSpeedOfLight(), count, radius));
 
 		stt.setBoundary(GeneralBoundaryType.Hardwall);
 		stt.setParticleSolver(new EulerRichardson());
@@ -90,9 +95,9 @@ public class InitialConditions {
 		ConstantForce cf = new ConstantForce();
 		cf.ey = -1;
 		stt.addForce(cf);
-		stt.setNumOfParticles(count);
-		stt.setParticleRadius(radius);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+		stt.setParticleList(
+				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
+				stt.getSpeedOfLight(), count, radius));
 
 		stt.setBoundary(GeneralBoundaryType.Hardwall);
 		stt.setParticleSolver(new EulerRichardson());
@@ -112,9 +117,9 @@ public class InitialConditions {
 		ConstantForce cf = new ConstantForce();
 		cf.bz = -1;
 		stt.addForce(cf);
-		stt.setNumOfParticles(count);
-		stt.setParticleRadius(radius);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+		stt.setParticleList(
+				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
+				stt.getSpeedOfLight(), count, radius));
 
 		stt.setBoundary(GeneralBoundaryType.Hardwall);
 		stt.setParticleSolver(new EulerRichardson());
@@ -134,15 +139,13 @@ public class InitialConditions {
 		stt.addForce(new ConstantForce());
 		stt.addForce(new SpringForce());
 
-		stt.setNumOfParticles(count);
-		stt.setParticleRadius(radius);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+		stt.setParticleList(new ArrayList<Particle>());
 
 		stt.setBoundary(GeneralBoundaryType.Periodic);
 		stt.setParticleSolver(new EulerRichardson());
 
 		for (int k = 0; k < count; k++) {
-			Particle par = new Particle();
+			Particle par = new ParticleFull();
 			par.setX(stt.getSimulationWidth() * Math.random());
 			par.setY(stt.getSimulationHeight() * Math.random());
 			par.setRadius(15);
@@ -171,7 +174,7 @@ public class InitialConditions {
 		ArrayList<Particle> particlelist = new ArrayList<Particle>(count);
 
 		for (int k = 0; k < count; k++) {
-			Particle p = new Particle();
+			Particle p = new ParticleFull();
 			p.setX(width * Math.random());
 			p.setY(height * Math.random());
 			p.setRadius(radius);

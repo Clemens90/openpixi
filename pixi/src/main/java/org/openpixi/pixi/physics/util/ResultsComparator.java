@@ -1,8 +1,8 @@
 package org.openpixi.pixi.physics.util;
 
-import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.particles.Particle;
 
 import java.util.List;
 
@@ -142,16 +142,6 @@ public class ResultsComparator {
 		difference = Math.abs(cellA.getBz() - cellB.getBz());
 		if (difference > tolerance) {
 			printSingleMemberDifference("bz", difference);
-			ok = false;
-		}
-		difference = Math.abs(cellA.getExo() - cellB.getExo());
-		if (difference > tolerance) {
-			printSingleMemberDifference("exo", difference);
-			ok = false;
-		}
-		difference = Math.abs(cellA.getEyo() - cellB.getEyo());
-		if (difference > tolerance) {
-			printSingleMemberDifference("eyo", difference);
 			ok = false;
 		}
 		difference = Math.abs(cellA.getBzo() - cellB.getBzo());

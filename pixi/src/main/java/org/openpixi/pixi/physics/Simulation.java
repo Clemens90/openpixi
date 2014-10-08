@@ -16,9 +16,11 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 package org.openpixi.pixi.physics;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
@@ -30,6 +32,7 @@ import org.openpixi.pixi.physics.grid.LocalInterpolation;
 import org.openpixi.pixi.physics.movement.ParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
 import java.util.ArrayList;
@@ -37,44 +40,55 @@ import java.util.List;
 
 public class Simulation {
 
-	/**Timestep*/
+	/**
+	 * Timestep
+	 */
 	public double tstep;
-	/**Width of simulated area*/
+	/**
+	 * Width of simulated area
+	 */
 	private double width;
-	/**Height of simulated area*/
-	private double  height;
+	/**
+	 * Height of simulated area
+	 */
+	private double height;
 	private double speedOfLight;
+<<<<<<< HEAD
         
         private double mue0 = 0.05;
         private double eps0 = 10.0;
 
 	/** Number of iterations in the non-interactive simulation. */
+=======
+	/**
+	 * Number of iterations in the non-interactive simulation.
+	 */
+>>>>>>> 719458d68c1e3c26816ff3e46f7ed9116ca19b40
 	private int iterations;
-
-	/**Contains all Particle2D objects*/
+	/**
+	 * Contains all Particle2D objects
+	 */
 	public ArrayList<Particle> particles;
 	public CombinedForce f;
 	private ParticleMover mover;
-	/**Grid for dynamic field calculation*/
+	/**
+	 * Grid for dynamic field calculation
+	 */
 	public Grid grid;
 	public Detector detector;
 	public CollisionAlgorithm collisionalgorithm;
-	public boolean collisionBoolean = false;
-
 	/**
-	 * We can turn on or off the effect of the grid on particles by
-	 * adding or removing this force from the total force.
+	 * We can turn on or off the effect of the grid on particles by adding or
+	 * removing this force from the total force.
 	 */
 	private SimpleGridForce gridForce = new SimpleGridForce();
 	private boolean usingGridForce = false;
-
 	private ParticleGridInitializer particleGridInitializer = new ParticleGridInitializer();
-
 	private Interpolation interpolation;
-
-	/**solver for the electrostatic poisson equation*/
+	/**
+	 * solver for the electrostatic poisson equation
+	 */
 	private PoissonSolver poisolver;
-
 
 	public Interpolation getInterpolation() {
 		return interpolation;
@@ -96,7 +110,6 @@ public class Simulation {
 		return mover;
 	}
 
-
 	/**
 	 * Constructor for non distributed simulation.
 	 */
@@ -108,7 +121,7 @@ public class Simulation {
 		iterations = settings.getIterations();
 
 		// TODO make particles a generic list
-		particles = (ArrayList<Particle>)settings.getParticles();
+		particles = (ArrayList<Particle>) settings.getParticles();
 		f = settings.getForce();
 
 		ParticleBoundaries particleBoundaries = new SimpleParticleBoundaries(
@@ -122,8 +135,7 @@ public class Simulation {
 		grid = new Grid(settings);
 		if (settings.useGrid()) {
 			turnGridForceOn();
-		}
-		else {
+		} else {
 			turnGridForceOff();
 		}
 
@@ -138,21 +150,25 @@ public class Simulation {
 		prepareAllParticles();
 	}
 
-
 	/**
-	 * Constructor for distributed simulation.
-	 * Expects settings specific to the local node =>
-	 * the simulation width and height as well as
-	 * the number of cells in y and x direction must pertain to local simulation
-	 * not to the global simulation.
-	 * (No need to set poison solver and run ParticleGridInitializer as it was already run on the
-	 * master node).
+	 * Constructor for distributed simulation. Expects settings specific to the
+	 * local node => the simulation width and height as well as the number of
+	 * cells in y and x direction must pertain to local simulation not to the
+	 * global simulation. (No need to set poison solver and run
+	 * ParticleGridInitializer as it was already run on the master node).
 	 */
 	public Simulation(Settings settings,
+<<<<<<< HEAD
 					  Grid grid,
 					  List<Particle> particles,
 					  ParticleBoundaries particleBoundaries,
 					  Interpolation interpolation) {
+=======
+			Grid grid,
+			List<Particle> particles,
+			ParticleBoundaries particleBoundaries,
+			Interpolation interpolation) {
+>>>>>>> 719458d68c1e3c26816ff3e46f7ed9116ca19b40
 
 		this.tstep = settings.getTimeStep();
 		this.width = settings.getSimulationWidth();
@@ -160,7 +176,7 @@ public class Simulation {
 		this.speedOfLight = settings.getSpeedOfLight();
 		this.iterations = settings.getIterations();
 
-		this.particles = (ArrayList<Particle>)particles;
+		this.particles = (ArrayList<Particle>) particles;
 		f = settings.getForce();
 
 		mover = new ParticleMover(
@@ -171,8 +187,7 @@ public class Simulation {
 		this.grid = grid;
 		if (settings.useGrid()) {
 			turnGridForceOn();
-		}
-		else {
+		} else {
 			turnGridForceOff();
 		}
 
@@ -184,7 +199,6 @@ public class Simulation {
 		prepareAllParticles();
 	}
 
-
 	public void turnGridForceOn() {
 		if (!usingGridForce) {
 			f.add(gridForce);
@@ -195,7 +209,6 @@ public class Simulation {
                 }
 	}
 
-
 	public void turnGridForceOff() {
 		if (usingGridForce) {
 			f.remove(gridForce);
@@ -203,13 +216,13 @@ public class Simulation {
 		}
 	}
 
-
 	/**
-	 * Runs the simulation in steps.
-	 * (for interactive simulations)
+	 * Runs the simulation in steps. (for interactive simulations)
 	 */
-	public void step() {
+	public void step() throws FileNotFoundException {
+
 		particlePush();
+<<<<<<< HEAD
 		if(collisionBoolean) {
 					long startTime = System.currentTimeMillis();
 			detector.run();
@@ -217,22 +230,72 @@ public class Simulation {
 					long endTime = System.currentTimeMillis();
 					System.out.println("Die Berechnung der Kollisionen dauert: " + (endTime-startTime));
 		}
+=======
+		detector.run();
+		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
+>>>>>>> 719458d68c1e3c26816ff3e46f7ed9116ca19b40
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
 		interpolation.interpolateToParticle(particles, grid);
+
 	}
 
-
 	/**
-	 * Runs the entire simulation at once.
-	 * (for non-interactive simulations)
+	 * Runs the entire simulation at once. (for non-interactive simulations)
 	 */
-	public void run() {
+	public void run() throws FileNotFoundException {
 		for (int i = 0; i < iterations; ++i) {
 			step();
 		}
 	}
 
+	/**
+	 * Write the results to a txt file
+	 */
+	public void writeToFile() throws FileNotFoundException {
+		PrintWriter pw = new PrintWriter(new File("particles_seq.txt"));
+
+		for (int i = 0; i < particles.size(); i++) {
+			pw.write(particles.get(i).getX() + "\n");
+			pw.write(particles.get(i).getY() + "\n");
+			pw.write(particles.get(i).getRadius() + "\n");
+			pw.write(particles.get(i).getVx() + "\n");
+			pw.write(particles.get(i).getVy() + "\n");
+			pw.write(particles.get(i).getAx() + "\n");
+			pw.write(particles.get(i).getAy() + "\n");
+			pw.write(particles.get(i).getMass() + "\n");
+			pw.write(particles.get(i).getCharge() + "\n");
+			pw.write(particles.get(i).getPrevX() + "\n");
+			pw.write(particles.get(i).getPrevY() + "\n");
+			pw.write(particles.get(i).getEx() + "\n");
+			pw.write(particles.get(i).getEy() + "\n");
+			pw.write(particles.get(i).getBz() + "\n");
+			pw.write(particles.get(i).getPrevPositionComponentForceX() + "\n");
+			pw.write(particles.get(i).getPrevPositionComponentForceY() + "\n");
+			pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceX() + "\n");
+			pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceY() + "\n");
+			pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceX() + "\n");
+			pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceY() + "\n");
+			pw.write(particles.get(i).getPrevBz() + "\n");
+			pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");
+		}
+		pw.close();
+
+		pw = new PrintWriter(new File("cells_seq.txt"));
+		for (int i = 0; i < grid.getNumCellsXTotal(); i++) {
+			for (int j = 0; j < grid.getNumCellsYTotal(); j++) {
+				pw.write(grid.getCells()[i][j].getJx() + "\n");
+				pw.write(grid.getCells()[i][j].getJy() + "\n");
+				pw.write(grid.getCells()[i][j].getRho() + "\n");
+				pw.write(grid.getCells()[i][j].getPhi() + "\n");
+				pw.write(grid.getCells()[i][j].getEx() + "\n");
+				pw.write(grid.getCells()[i][j].getEy() + "\n");
+				pw.write(grid.getCells()[i][j].getBz() + "\n");
+				pw.write(grid.getCells()[i][j].getBzo() + "\n");
+			}
+		}
+		pw.close();
+	}
 
 	public void particlePush() {
 		mover.push(particles, f, tstep);

@@ -1,8 +1,8 @@
 package org.openpixi.pixi.physics.grid;
 
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 
-public class EmptyInterpolator extends InterpolatorAlgorithm {
+public class EmptyInterpolator implements InterpolatorAlgorithm {
 
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {

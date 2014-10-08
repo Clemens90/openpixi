@@ -1,10 +1,10 @@
 package org.openpixi.pixi.physics.grid;
 
-import org.openpixi.pixi.physics.Debug;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 
-public class InterpolatorAlgorithm {
+public interface InterpolatorAlgorithm {
 
+<<<<<<< HEAD
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
 
 	}
@@ -171,30 +171,12 @@ public class InterpolatorAlgorithm {
 		g.addRho(xCellPosition + 1,yCellPosition + 1, p.getCharge() * Math.abs((p.getX() - xCellPosition * g.getCellWidth()) *
 				(p.getY() - yCellPosition * g.getCellHeight()) / cellArea));
 	}
+=======
+	public void interpolateToGrid(Particle p, Grid g, double tstep);
+>>>>>>> 719458d68c1e3c26816ff3e46f7ed9116ca19b40
 	
-	public int checkPeriodicBoundary(int a, int b) {
+	public void interpolateChargedensity(Particle p, Grid g);
 
-		if (a >= b) {
-			a -= b;
-		}
-		else {
-			if (a < 0) {
-				a += b;
-			}
-		}
+	public void interpolateToParticle(Particle p, Grid g);
 
-		return a;
-	}
-
-	/**
-	 * Test via asserts whether particle is within simulation area.
-	 * @param p
-	 * @param g
-	 */
-	private void assertParticleInSimulationArea(Particle p, Grid g) {
-		assert(p.getX() >= 0);
-		assert(p.getY() >= 0);
-		assert(p.getX() < g.getCellWidth() * g.getNumCellsX());
-		assert(p.getY() < g.getCellHeight() * g.getNumCellsY());
-	}
 }
